@@ -81,5 +81,7 @@ module "gcloud_version" {
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint  = "gcloud"
   create_cmd_body        = "version"
-  destroy_cmd_entrypoint = "echo skip"
+  
+  destroy_cmd_entrypoint = "echo" # no need for destroy, set it to avoid errors with default value
+  destroy_cmd_body       = "skip"
 }
