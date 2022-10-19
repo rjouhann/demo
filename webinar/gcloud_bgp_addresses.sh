@@ -7,6 +7,13 @@ google_compute_router_name=$3
 
 GCLOUD_LOCATION=$(command -v gcloud)
 echo "Using gcloud from $GCLOUD_LOCATION"
+
+if ! command -v gcloud --version &> /dev/null
+then
+    echo "gcloud --version could not be found"
+    exit
+fi
+
 gcloud --version
 
 # Remove old files

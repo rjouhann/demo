@@ -156,7 +156,7 @@ variable "pf_crc_phase2_lifetime" {
 variable "pf_crc_gateway_address" {
   type        = string
   description = "The gateway address of your VPN device. Because VPNs traverse the public internet, this must be a public IP address owned by you."
-  default     = "127.0.0.1"
+  default     = "117.109.121.202"
 }
 variable "pf_crc_shared_key" {
   type        = string
