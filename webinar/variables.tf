@@ -12,10 +12,6 @@ variable "gcp_project_id" {
   description = "Google Cloud project ID"
 }
 
-variable "GOOGLE_CREDENTIALS" {
-  type        = string
-  description = "Google Cloud service account credentials (path to GCP json file)"
-}
 # https://cloud.google.com/compute/docs/regions-zones
 variable "gcp_region1" {
   type        = string
