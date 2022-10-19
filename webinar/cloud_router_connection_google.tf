@@ -12,7 +12,7 @@ module "gcloud_version" {
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = "version"
+  create_cmd_body       = "help"
 }
 
 # From the Google side: Create a Google Cloud Router with ASN 16550.
