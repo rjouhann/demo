@@ -65,8 +65,10 @@ module "gcloud_bgp_addresses" {
   skip_download                     = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-  create_cmd_entrypoint = "${path.module}/gcloud_bgp_addresses.sh"
-  create_cmd_body       = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name}"
+  create_cmd_entrypoint  = "${path.module}/gcloud_bgp_addresses.sh"
+  create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name}"
+
+  destroy_cmd_entrypoint = "echo skip" # no need for destroy, set it to avoid errors with default value
 
   module_depends_on = [
     packetfabric_cloud_router_connection_google.crc_1
@@ -141,8 +143,10 @@ module "gcloud_bgp_peer_update" {
   skip_download                     = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-  create_cmd_entrypoint = "${path.module}/gcloud_bgp_peer_update.sh"
-  create_cmd_body       = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name} ${var.pf_cr_asn}"
+  create_cmd_entrypoint  = "${path.module}/gcloud_bgp_peer_update.sh"
+  create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name} ${var.pf_cr_asn}"
+
+  destroy_cmd_entrypoint = "echo skip" # no need for destroy, set it to avoid errors with default value
 
   module_depends_on = [
     packetfabric_cloud_router_connection_google.crc_1

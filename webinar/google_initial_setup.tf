@@ -79,6 +79,7 @@ module "gcloud_version" {
   skip_download                     = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = "version"
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "version"
+  destroy_cmd_entrypoint = "echo skip"
 }
