@@ -10,4 +10,5 @@ resource "packetfabric_cloud_router" "cr" {
 
 output "packetfabric_cloud_router" {
   value = packetfabric_cloud_router.cr
+   sensitive = true
 }
