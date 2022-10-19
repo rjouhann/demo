@@ -2,6 +2,18 @@
 ###### Google Cloud Router Connection
 ########################################
 
+# Verify Terraform gcloud module works
+module "gcloud_version" {
+  # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
+  source                            = "terraform-google-modules/gcloud/google"
+  version                           = "~> 2.0"
+  use_tf_google_credentials_env_var = true
+
+  # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
+  create_cmd_entrypoint = "gcloud"
+  create_cmd_body       = "version"
+}
+
 # From the Google side: Create a Google Cloud Router with ASN 16550.
 resource "google_compute_router" "google_router_1" {
   provider = google
@@ -62,7 +74,6 @@ module "gcloud_bgp_addresses" {
   source                            = "terraform-google-modules/gcloud/google"
   version                           = "~> 2.0"
   use_tf_google_credentials_env_var = true
-  skip_download                     = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "${path.module}/gcloud_bgp_addresses.sh"
@@ -138,7 +149,6 @@ module "gcloud_bgp_peer_update" {
   source                            = "terraform-google-modules/gcloud/google"
   version                           = "~> 2.0"
   use_tf_google_credentials_env_var = true
-  skip_download                     = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "${path.module}/gcloud_bgp_peer_update.sh"
