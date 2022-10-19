@@ -18,6 +18,7 @@ provider "packetfabric" {
 
 # Make sure you enabled Compute Engine API
 provider "google" {
+  # using environment variable called GOOGLE_CREDENTIALS
   project     = var.gcp_project_id
   region      = var.gcp_region1
   zone        = var.gcp_zone1
