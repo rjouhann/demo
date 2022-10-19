@@ -75,6 +75,9 @@ module "gcloud_bgp_addresses" {
   module_depends_on = [
     packetfabric_cloud_router_connection_google.crc_1
   ]
+
+  # When "gcloud_bin_abs_path" changes, it should not trigger a replacement
+  # https://github.com/hashicorp/terraform/issues/27360
 }
 data "local_file" "cloud_router_ip_address" {
   filename = "${path.module}/cloud_router_ip_address.txt"
