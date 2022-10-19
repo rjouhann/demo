@@ -62,7 +62,7 @@ module "gcloud_bgp_addresses" {
   source                   = "terraform-google-modules/gcloud/google"
   version                  = "~> 2.0"
   use_tf_google_credentials_env_var = true
-  gcloud_skip_download = false
+  skip_download = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "${path.module}/gcloud_bgp_addresses.sh"
@@ -138,7 +138,7 @@ module "gcloud_bgp_peer_update" {
   source                   = "terraform-google-modules/gcloud/google"
   version                  = "~> 2.0"
   use_tf_google_credentials_env_var = true
-  gcloud_skip_download = false
+  skip_download = false
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "${path.module}/gcloud_bgp_peer_update.sh"
