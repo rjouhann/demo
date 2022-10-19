@@ -1,6 +1,3 @@
-# create random name to use to name objects
-resource "random_pet" "name" {}
-
 # From the PacketFabric side: Create a cloud router
 resource "packetfabric_cloud_router" "cr" {
   provider     = packetfabric
