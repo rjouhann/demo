@@ -49,108 +49,110 @@ resource "packetfabric_cloud_router_connection_google" "crc_1" {
   maybe_nat                   = var.pf_crc_maybe_nat
 }
 
-# From both sides: Configure BGP.
+# # From both sides: Configure BGP.
 
-# Because the BGP session is created automatically, the only way to get the BGP Addresses it is to use gcloud
-# To avoid using this workaround, vote for:
-# https://github.com/hashicorp/terraform-provider-google/issues/11458
-# https://github.com/hashicorp/terraform-provider-google/issues/12624
+# # Because the BGP session is created automatically, the only way to get the BGP Addresses it is to use gcloud
+# # To avoid using this workaround, vote for:
+# # https://github.com/hashicorp/terraform-provider-google/issues/11458
+# # https://github.com/hashicorp/terraform-provider-google/issues/12624
 
-# Get the BGP Addresses using glcoud terraform module as a workaround
-module "gcloud_bgp_addresses" {
-  # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
-  source                            = "terraform-google-modules/gcloud/google"
-  version                           = "~> 2.0"
-  use_tf_google_credentials_env_var = true
-  skip_download                     = false
+# # Get the BGP Addresses using glcoud terraform module as a workaround
+# module "gcloud_bgp_addresses" {
+#   # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
+#   source                            = "terraform-google-modules/gcloud/google"
+#   version                           = "~> 2.0"
+#   use_tf_google_credentials_env_var = true
+#   skip_download                     = false
 
-  # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-  create_cmd_entrypoint  = "${path.module}/gcloud_bgp_addresses.sh"
-  create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name}"
+#   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
+#   create_cmd_entrypoint  = "${path.module}/gcloud_bgp_addresses.sh"
+#   create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name}"
 
-  destroy_cmd_entrypoint = "echo" # no need for destroy, set it to avoid errors with default value
-  destroy_cmd_body       = "skip"
-  
-  module_depends_on = [
-    packetfabric_cloud_router_connection_google.crc_1
-  ]
-}
-data "local_file" "cloud_router_ip_address" {
-  filename = "${path.module}/cloud_router_ip_address.txt"
-  depends_on = [
-    module.gcloud_bgp_addresses
-  ]
-}
-data "local_file" "customer_router_ip_address" {
-  filename = "${path.module}/customer_router_ip_address.txt"
-  depends_on = [
-    module.gcloud_bgp_addresses
-  ]
-}
+#   # no destroy needed
+#   destroy_cmd_entrypoint = "echo"
+#   destroy_cmd_body       = "skip"
 
-# From the PacketFabric side: Configure BGP
-resource "packetfabric_cloud_router_bgp_session" "crbs_1" {
-  provider       = packetfabric
-  circuit_id     = packetfabric_cloud_router.cr.id
-  connection_id  = packetfabric_cloud_router_connection_google.crc_1.id
-  address_family = var.pf_crbs_af
-  multihop_ttl   = var.pf_crbs_mhttl
-  remote_asn     = var.gcp_side_asn1
-  orlonger       = var.pf_crbs_orlonger
-  # when the google_compute_interconnect_attachment data source will exist, no need to use the gcloud terraform module
-  # https://github.com/hashicorp/terraform-provider-google/issues/12624
-  # remote_address = data.google_compute_interconnect_attachment.google_interconnect_1.cloud_router_ip_address    # Google side
-  # l3_address     = data.google_compute_interconnect_attachment.google_interconnect_1.customer_router_ip_address # PF side
-  remote_address = data.local_file.cloud_router_ip_address.content    # Google side
-  l3_address     = data.local_file.customer_router_ip_address.content # PF side
-}
-output "packetfabric_cloud_router_bgp_session_crbs_1" {
-  value = packetfabric_cloud_router_bgp_session.crbs_1
-}
+#   module_depends_on = [
+#     packetfabric_cloud_router_connection_google.crc_1
+#   ]
+# }
+# data "local_file" "cloud_router_ip_address" {
+#   filename = "${path.module}/cloud_router_ip_address.txt"
+#   depends_on = [
+#     module.gcloud_bgp_addresses
+#   ]
+# }
+# data "local_file" "customer_router_ip_address" {
+#   filename = "${path.module}/customer_router_ip_address.txt"
+#   depends_on = [
+#     module.gcloud_bgp_addresses
+#   ]
+# }
 
-# Configure BGP Prefix is mandatory to setup the BGP session correctly
-resource "packetfabric_cloud_router_bgp_prefixes" "crbp_1" {
-  provider          = packetfabric
-  bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
-  prefixes {
-    prefix = var.ipsec_subnet_cidr2
-    type   = "out" # Allowed Prefixes to Cloud
-    order  = 0
-  }
-  prefixes {
-    prefix = var.google_subnet_cidr1
-    type   = "in" # Allowed Prefixes from Cloud
-    order  = 0
-  }
-}
-data "packetfabric_cloud_router_bgp_prefixes" "bgp_prefix_crbp_1" {
-  provider          = packetfabric
-  bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
-}
-output "packetfabric_bgp_prefix_crbp_1" {
-  value = data.packetfabric_cloud_router_bgp_prefixes.bgp_prefix_crbp_1
-}
+# # From the PacketFabric side: Configure BGP
+# resource "packetfabric_cloud_router_bgp_session" "crbs_1" {
+#   provider       = packetfabric
+#   circuit_id     = packetfabric_cloud_router.cr.id
+#   connection_id  = packetfabric_cloud_router_connection_google.crc_1.id
+#   address_family = var.pf_crbs_af
+#   multihop_ttl   = var.pf_crbs_mhttl
+#   remote_asn     = var.gcp_side_asn1
+#   orlonger       = var.pf_crbs_orlonger
+#   # when the google_compute_interconnect_attachment data source will exist, no need to use the gcloud terraform module
+#   # https://github.com/hashicorp/terraform-provider-google/issues/12624
+#   # remote_address = data.google_compute_interconnect_attachment.google_interconnect_1.cloud_router_ip_address    # Google side
+#   # l3_address     = data.google_compute_interconnect_attachment.google_interconnect_1.customer_router_ip_address # PF side
+#   remote_address = data.local_file.cloud_router_ip_address.content    # Google side
+#   l3_address     = data.local_file.customer_router_ip_address.content # PF side
+# }
+# output "packetfabric_cloud_router_bgp_session_crbs_1" {
+#   value = packetfabric_cloud_router_bgp_session.crbs_1
+# }
 
-# Because the BGP session is created automatically, the only way to update it is to use gcloud
-# To avoid using this workaround, vote for:
-# https://github.com/hashicorp/terraform-provider-google/issues/12630
+# # Configure BGP Prefix is mandatory to setup the BGP session correctly
+# resource "packetfabric_cloud_router_bgp_prefixes" "crbp_1" {
+#   provider          = packetfabric
+#   bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
+#   prefixes {
+#     prefix = var.ipsec_subnet_cidr2
+#     type   = "out" # Allowed Prefixes to Cloud
+#     order  = 0
+#   }
+#   prefixes {
+#     prefix = var.google_subnet_cidr1
+#     type   = "in" # Allowed Prefixes from Cloud
+#     order  = 0
+#   }
+# }
+# data "packetfabric_cloud_router_bgp_prefixes" "bgp_prefix_crbp_1" {
+#   provider          = packetfabric
+#   bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
+# }
+# output "packetfabric_bgp_prefix_crbp_1" {
+#   value = data.packetfabric_cloud_router_bgp_prefixes.bgp_prefix_crbp_1
+# }
 
-# Update BGP Peer in the BGP session's Google Cloud Router
-module "gcloud_bgp_peer_update" {
-  # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
-  source                            = "terraform-google-modules/gcloud/google"
-  version                           = "~> 2.0"
-  use_tf_google_credentials_env_var = true
-  skip_download                     = false
+# # Because the BGP session is created automatically, the only way to update it is to use gcloud
+# # To avoid using this workaround, vote for:
+# # https://github.com/hashicorp/terraform-provider-google/issues/12630
 
-  # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-  create_cmd_entrypoint  = "${path.module}/gcloud_bgp_peer_update.sh"
-  create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name} ${var.pf_cr_asn}"
+# # Update BGP Peer in the BGP session's Google Cloud Router
+# module "gcloud_bgp_peer_update" {
+#   # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
+#   source                            = "terraform-google-modules/gcloud/google"
+#   version                           = "~> 2.0"
+#   use_tf_google_credentials_env_var = true
+#   skip_download                     = false
 
-  destroy_cmd_entrypoint = "echo" # no need for destroy, set it to avoid errors with default value
-  destroy_cmd_body       = "skip"
+#   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
+#   create_cmd_entrypoint  = "${path.module}/gcloud_bgp_peer_update.sh"
+#   create_cmd_body        = "${var.gcp_project_id} ${var.gcp_region1} ${google_compute_router.google_router_1.name} ${var.pf_cr_asn}"
 
-  module_depends_on = [
-    packetfabric_cloud_router_connection_google.crc_1
-  ]
-}
+#   # no destroy needed
+#   destroy_cmd_entrypoint = "echo"
+#   destroy_cmd_body       = "skip"
+
+#   module_depends_on = [
+#     packetfabric_cloud_router_connection_google.crc_1
+#   ]
+# }
