@@ -104,6 +104,15 @@ resource "packetfabric_cloud_router_bgp_session" "crbs_1" {
   # l3_address     = data.google_compute_interconnect_attachment.google_interconnect_1.customer_router_ip_address # PF side
   remote_address = data.local_file.cloud_router_ip_address.content    # Google side
   l3_address     = data.local_file.customer_router_ip_address.content # PF side
+
+  # workaround until we can use lifecycle into Terraform gcloud Module
+  # https://github.com/hashicorp/terraform/issues/27360
+  lifecycle {
+    ignore_changes = [
+      remote_address,
+      l3_address
+    ]
+  }
 }
 output "packetfabric_cloud_router_bgp_session_crbs_1" {
   value = packetfabric_cloud_router_bgp_session.crbs_1

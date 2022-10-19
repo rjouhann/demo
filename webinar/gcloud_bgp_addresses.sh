@@ -11,6 +11,9 @@ echo "Using gcloud from $GCLOUD_LOCATION"
 if ! command -v gcloud --version &> /dev/null
 then
     echo "gcloud --version could not be found"
+    # create empty file so Terraform doesn't complain
+    touch cloud_router_ip_address.txt
+    touch customer_router_ip_address.txt
     exit
 fi
 
