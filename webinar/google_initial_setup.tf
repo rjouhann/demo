@@ -70,19 +70,19 @@ output "google_public_ip_vm_1" {
   value       = data.google_compute_instance.vm_1.network_interface.0.access_config.0.nat_ip
 }
 
-# # Verify Terraform gcloud module works in your environment
-# module "gcloud_version" {
-#   # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
-#   source  = "terraform-google-modules/gcloud/google"
-#   version = "~> 2.0"
-#   use_tf_google_credentials_env_var = true
-#   skip_download                     = false
+# Verify Terraform gcloud module works in your environment
+module "gcloud_version" {
+  # https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 2.0"
+  use_tf_google_credentials_env_var = true
+  skip_download                     = false
 
-#   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
-#   create_cmd_entrypoint  = "gcloud"
-#   create_cmd_body        = "version"
+  # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "version"
 
-#   # no destroy needed
-#   destroy_cmd_entrypoint = "echo"
-#   destroy_cmd_body       = "skip"
-# }
+  # no destroy needed
+  destroy_cmd_entrypoint = "echo"
+  destroy_cmd_body       = "skip"
+}

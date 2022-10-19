@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -x
+set -x
 
 project=$1 
 region=$2
@@ -31,6 +31,8 @@ customer_router_ip_address=$(echo $output| jq '.bgpPeers[]'.peerIpAddress)
 echo "customer_router_ip_address=$customer_router_ip_address"
 
 # Saves BGP IP Addresses to file
+echo "${cloud_router_ip_address:: -1}"
+
 echo "${cloud_router_ip_address:: -1}/${cloud_router_ip_range: -3}" | cut -d '"' -f 2 | tr -d '\n' > cloud_router_ip_address.txt
 echo "${customer_router_ip_address:: -1}/${cloud_router_ip_range: -3}" | cut -d '"' -f 2 | tr -d '\n' > customer_router_ip_address.txt
 echo "cat cloud_router_ip_address.txt"
