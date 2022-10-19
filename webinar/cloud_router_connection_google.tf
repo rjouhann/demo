@@ -8,7 +8,6 @@ module "gcloud_version" {
   source                            = "terraform-google-modules/gcloud/google"
   version                           = "~> 2.0"
   use_tf_google_credentials_env_var = true
-  skip_provisioners = true
 
   # https://cloud.google.com/sdk/gcloud/reference/compute/routers/update-bgp-peer
   create_cmd_entrypoint = "gcloud"
