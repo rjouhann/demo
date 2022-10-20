@@ -8,7 +8,6 @@ variable "tag_name" {
 ## Google VARs
 variable "gcp_project_id" {
   type = string
-  # sensitive   = true
   description = "Google Cloud project ID"
 }
 
@@ -27,11 +26,6 @@ variable "google_subnet_cidr1" {
   type        = string
   description = "CIDR for the subnet"
   default     = "10.5.1.0/24"
-}
-variable "public_key" {
-  type        = string
-  description = "Public Key used to access demo Virtual Machines."
-  sensitive   = true
 }
 
 ## IPsec VAR
