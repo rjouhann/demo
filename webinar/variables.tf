@@ -45,8 +45,7 @@ variable "pf_api_key" {
 variable "pf_account_uuid" {
   type        = string
   description = "The UUID for the billing account (Find it under Billing > Accounts in the Portal)"
-  sensitive   = true
-  default     = "secret"
+  default     = "abc-123-def-456-ghi-789"
 }
 variable "pf_api_server" {
   type        = string
