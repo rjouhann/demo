@@ -82,7 +82,7 @@ variable "pf_crc_speed" {
 variable "pf_crc_pop1" {
   type        = string
   description = "The POP in which you want to provision the connection"
-  default     = "SFO1"
+  default     = "LAX2" # LAX2, LAX1, SFO1
 }
 variable "pf_crc_maybe_nat" {
   type        = bool
